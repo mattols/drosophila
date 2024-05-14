@@ -1,0 +1,372 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Drosophila-climatology},
+  pdfauthor={Sam Curnow research project - Matt Olson},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Drosophila-climatology}
+\author{Sam Curnow research project - Matt Olson}
+\date{2023-09-29}
+
+\begin{document}
+\maketitle
+
+\hypertarget{terra-and-gridded-data}{%
+\subsubsection{Terra and gridded data}\label{terra-and-gridded-data}}
+
+Most climate datasets are in a gridded format. The latest and best R
+package to work with gridded data is the
+\href{https://rspatial.github.io/terra/}{Terra package}. Libraries like
+this require additional, external geospatial libraries installed on your
+OS - e.g.~GDAL, GEOS, and PROJ.4. Installing Terra will vary based on
+your OS. \textbf{Be sure to read} the documentation so that you properly
+install any dependencies.
+
+\emph{Working with geospatial libraries can be tricky, and I am willing
+to help you troubleshoot if you run into issues.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(terra);}\FunctionTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+I'll also read in the csv file you shared and filter for a few key
+variables. Note you'll want to set your working directory or work from a
+project.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# read in data {-} omit NA values}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"climate\_data\_drosophila\_June.csv"}\NormalTok{)}
+\NormalTok{df2 }\OtherTok{\textless{}{-}}\NormalTok{ df }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(Species, Subgenus, MbDNA\_Male, MbDNA\_Female, Tmax,Tmin) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{na.omit}\NormalTok{()}
+\FunctionTok{head}\NormalTok{(df2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                    Species   Subgenus MbDNA_Male MbDNA_Female  Tmax  Tmin
+## 3  Drosophila_acanthoptera                 175.4        173.9 34.07  7.01
+## 4       Drosophila_affinis Sophophora      165.6        168.7 35.06  5.49
+## 6     Drosophila_algonquin Sophophora      170.0        156.2 34.81 13.14
+## 8     Drosophila_ananassae Sophophora      179.9        169.0 30.13  6.72
+## 9        Drosophila_anceps Drosophila      171.8        159.1 29.14  9.03
+## 10    Drosophila_arawakana Drosophila      187.5        165.5 28.80  3.60
+\end{verbatim}
+
+\hypertarget{bioclimatic-data}{%
+\subsubsection{Bioclimatic data}\label{bioclimatic-data}}
+
+\href{https://www.worldclim.org/}{WorldClim} hosts several easy to
+access datasets. Although these are not necessarily the most accurate
+for some studies, they should be perfectly sufficient for others. R has
+an easy-to-use library for accessing basic geographic and bioclimatic
+global variables. Climate-related variables are generally averages over
+a 30-year time-period (1970-2000).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(geodata)}
+\CommentTok{\# define output folder for data download}
+\ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{file.exists}\NormalTok{(}\StringTok{"data"}\NormalTok{))\{}\FunctionTok{dir.create}\NormalTok{(}\StringTok{"data"}\NormalTok{)\}}
+\NormalTok{outpath }\OtherTok{=} \StringTok{"data"}
+\CommentTok{\# download WorldClim global bioclimatic variables}
+\NormalTok{bioclim19 }\OtherTok{\textless{}{-}} \FunctionTok{worldclim\_global}\NormalTok{(}\StringTok{\textquotesingle{}bio\textquotesingle{}}\NormalTok{, }\AttributeTok{res=}\DecValTok{10}\NormalTok{, }\AttributeTok{path=}\NormalTok{outpath)}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Object has"}\NormalTok{,}\FunctionTok{nlyr}\NormalTok{(bioclim19),}\StringTok{"geographic layers"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Object has 19 geographic layers
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(bioclim19, }\DecValTok{12}\NormalTok{), }\AttributeTok{main=}\StringTok{"BIO12 = Annual Precipitation"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Drosophila-climatology_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+We can further subset these variables into individual layers
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# subset variables of interest}
+\NormalTok{tmax }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(bioclim19, }\DecValTok{5}\NormalTok{);}\FunctionTok{names}\NormalTok{(tmax) }\OtherTok{\textless{}{-}} \StringTok{"BIO5 {-} Max Temperature of Warmest Month"}
+\NormalTok{tmin }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(bioclim19, }\DecValTok{6}\NormalTok{);}\FunctionTok{names}\NormalTok{(tmin) }\OtherTok{\textless{}{-}} \StringTok{"BIO6 {-} Min Temperature of Warmest Month"}
+\FunctionTok{plot}\NormalTok{(}\FunctionTok{c}\NormalTok{(tmin,tmax), }\AttributeTok{col=}\FunctionTok{rev}\NormalTok{(}\FunctionTok{heat.colors}\NormalTok{(}\DecValTok{15}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Drosophila-climatology_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\hypertarget{subsetting-geographic-datasets}{%
+\subsubsection{Subsetting geographic
+datasets}\label{subsetting-geographic-datasets}}
+
+Fortunately your task is relatively simple. We can just subset these
+gridded datasets based on the temperature thresholds in your csv file.
+
+There are a few steps involved so I've created two functions. The code
+could probably be more efficient, but this is what I wrote. Several
+spatial functions are applied to the species in the csv file.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# function to apply spatial bounds for all species}
+\NormalTok{spat\_filter }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(csv.file, grid.var, var.name, }\AttributeTok{bounds=}\FunctionTok{c}\NormalTok{(}\StringTok{"lower"}\NormalTok{,}\StringTok{"upper"}\NormalTok{))\{}
+\NormalTok{  grid.cpy }\OtherTok{\textless{}{-}} \FunctionTok{rast}\NormalTok{(}\FunctionTok{replicate}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(csv.file),grid.var))}
+  \FunctionTok{names}\NormalTok{(grid.cpy) }\OtherTok{\textless{}{-}}\NormalTok{ csv.file}\SpecialCharTok{$}\NormalTok{Species }\CommentTok{\# rename layers}
+  \CommentTok{\# apply threshold from bounds arg}
+\NormalTok{  lowval}\OtherTok{=}\SpecialCharTok{{-}}\ConstantTok{Inf}\NormalTok{;upval}\OtherTok{=}\SpecialCharTok{{-}}\ConstantTok{Inf}
+  \ControlFlowTok{if}\NormalTok{ (bounds}\SpecialCharTok{==}\StringTok{\textquotesingle{}lower\textquotesingle{}}\NormalTok{)\{}
+\NormalTok{    t.dist }\OtherTok{\textless{}{-}} \FunctionTok{rast}\NormalTok{(}\FunctionTok{sapply}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{nrow}\NormalTok{(csv.file), }\ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{clamp}\NormalTok{(}\FunctionTok{subset}\NormalTok{(grid.cpy, x), }\AttributeTok{lower=}\NormalTok{csv.file[,var.name][x], }\AttributeTok{value=}\ConstantTok{FALSE}\NormalTok{)))\} }
+  \ControlFlowTok{else}\NormalTok{\{}
+\NormalTok{    t.dist }\OtherTok{\textless{}{-}} \FunctionTok{rast}\NormalTok{(}\FunctionTok{sapply}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{nrow}\NormalTok{(csv.file), }\ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{clamp}\NormalTok{(}\FunctionTok{subset}\NormalTok{(grid.cpy, x), }\AttributeTok{upper=}\NormalTok{csv.file[,var.name][x], }\AttributeTok{value=}\ConstantTok{FALSE}\NormalTok{)))\} }
+  \FunctionTok{return}\NormalTok{(t.dist)}
+\NormalTok{\}}
+
+\CommentTok{\# function to combine layers (if needed)}
+\NormalTok{grid\_comb }\OtherTok{\textless{}{-}}  \ControlFlowTok{function}\NormalTok{(stack.a, stack.b, original.layer.a)\{}
+  \CommentTok{\# boolean operator over all land surface where both conditions meet}
+\NormalTok{  comb.grid }\OtherTok{\textless{}{-}} \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(stack.a) }\SpecialCharTok{\&} \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(stack.b) }\SpecialCharTok{\&} \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(}\FunctionTok{rast}\NormalTok{(}\FunctionTok{replicate}\NormalTok{(}\FunctionTok{nlyr}\NormalTok{(stack.a),original.layer.a)))}
+  \FunctionTok{return}\NormalTok{(comb.grid)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{mapping-results}{%
+\subsubsection{Mapping results}\label{mapping-results}}
+
+Now we can run these functions and plot the results for one of the
+variables. I'll just stick to simple map plots.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# run the function for both variables}
+\NormalTok{tmax.stack }\OtherTok{\textless{}{-}}  \FunctionTok{spat\_filter}\NormalTok{(df2, tmax, }\StringTok{"Tmax"}\NormalTok{, }\AttributeTok{bounds=}\StringTok{"upper"}\NormalTok{)}
+\NormalTok{tmin.stack }\OtherTok{\textless{}{-}}  \FunctionTok{spat\_filter}\NormalTok{(df2, tmin, }\StringTok{"Tmin"}\NormalTok{, }\AttributeTok{bounds=}\StringTok{"lower"}\NormalTok{)}
+
+\CommentTok{\# tmin distribution of first four species}
+\FunctionTok{plot}\NormalTok{(tmin.stack[[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{]], }\AttributeTok{col=}\FunctionTok{rev}\NormalTok{(}\FunctionTok{heat.colors}\NormalTok{(}\DecValTok{15}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Drosophila-climatology_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+And combine the layers to show where all conditions are met.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# combine layers and plot distribution}
+\NormalTok{t.dist }\OtherTok{\textless{}{-}} \FunctionTok{grid\_comb}\NormalTok{(tmax.stack,tmin.stack,tmax)}
+\CommentTok{\# plot the distribution for the first four}
+\FunctionTok{plot}\NormalTok{(t.dist[[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Drosophila-climatology_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+You can also add country boundaries to give greater context to a map.
+This function is within the same package we loaded above.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot first species with world map}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\NormalTok{worldmap }\OtherTok{\textless{}{-}} \FunctionTok{world}\NormalTok{(}\AttributeTok{resolution=}\DecValTok{5}\NormalTok{,}\AttributeTok{level=}\DecValTok{0}\NormalTok{,outpath,}\AttributeTok{version=}\StringTok{"latest"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(tmin.stack,}\DecValTok{1}\NormalTok{), }\AttributeTok{col=}\FunctionTok{rev}\NormalTok{(}\FunctionTok{heat.colors}\NormalTok{(}\DecValTok{15}\NormalTok{)), }\AttributeTok{main=}\FunctionTok{paste}\NormalTok{(}\StringTok{"Tmin threshold for"}\NormalTok{,df2}\SpecialCharTok{$}\NormalTok{Species[}\DecValTok{1}\NormalTok{]) )}
+\FunctionTok{plot}\NormalTok{(worldmap, }\AttributeTok{add=}\ConstantTok{TRUE}\NormalTok{, }\AttributeTok{lwd=}\FloatTok{0.5}\NormalTok{, }\AttributeTok{border=}\FunctionTok{alpha}\NormalTok{(}\FunctionTok{rgb}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{), }\FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Drosophila-climatology_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+\hypertarget{plotting-results}{%
+\subsubsection{Plotting results}\label{plotting-results}}
+
+Finally, you can generate some statistics about the spatial distribution
+of these species.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# generate some statistics from the first species only}
+\FunctionTok{crds}\NormalTok{(t.dist[[}\DecValTok{1}\NormalTok{]], }\AttributeTok{df=}\ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(}\FunctionTok{values}\NormalTok{(t.dist[[}\DecValTok{1}\NormalTok{]])}\SpecialCharTok{==}\DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{n=}\FunctionTok{n}\NormalTok{(), }\AttributeTok{latmean=}\FunctionTok{mean}\NormalTok{(y), }\AttributeTok{latmax=}\FunctionTok{max}\NormalTok{(y), }\AttributeTok{latmin=}\FunctionTok{min}\NormalTok{(y) )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       n   latmean   latmax    latmin
+## 1 96099 -2.541921 48.41667 -48.08333
+\end{verbatim}
+
+We can build a function and calculate these same stats over the entire
+dataset, re-inserting the values into our dataframe. Again, the code
+could probably be more efficient. This step may take a minute, so you
+may want to refill your coffee.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# function to extract stats from a given layer}
+\NormalTok{lyr\_summary }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(lyr)\{}
+\NormalTok{  rowinfo }\OtherTok{\textless{}{-}} \FunctionTok{crds}\NormalTok{(lyr, }\AttributeTok{df=}\ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(}\FunctionTok{values}\NormalTok{(lyr)}\SpecialCharTok{==}\DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{n=}\FunctionTok{n}\NormalTok{(), }\AttributeTok{latmean=}\FunctionTok{mean}\NormalTok{(y), }\AttributeTok{latmax=}\FunctionTok{max}\NormalTok{(y), }\AttributeTok{latmin=}\FunctionTok{min}\NormalTok{(y) )}
+  \FunctionTok{return}\NormalTok{(rowinfo)}
+\NormalTok{\}}
+\CommentTok{\# apply this to all layers}
+\NormalTok{t.df2 }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{nlyr}\NormalTok{(t.dist), }\ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{lyr\_summary}\NormalTok{(t.dist[[x]])  )}
+\CommentTok{\# insert layers into dataframe and a clean}
+\NormalTok{df3 }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(t.df2)) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Species =}\NormalTok{ df2}\SpecialCharTok{$}\NormalTok{Species, }\AttributeTok{.before=}\NormalTok{n) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{full\_join}\NormalTok{(df2, }\AttributeTok{by=}\StringTok{\textquotesingle{}Species\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{n =} \FunctionTok{unlist}\NormalTok{(n), }\AttributeTok{latmean =} \FunctionTok{unlist}\NormalTok{(latmean),}\AttributeTok{latmax =} \FunctionTok{unlist}\NormalTok{(latmax),}\AttributeTok{latmin =} \FunctionTok{unlist}\NormalTok{(latmin) ) }
+\FunctionTok{head}\NormalTok{(df3)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                   Species      n   latmean   latmax    latmin   Subgenus
+## 1 Drosophila_acanthoptera  96099 -2.541921 48.41667 -48.08333           
+## 2      Drosophila_affinis 117630 -2.697064 57.58333 -48.08333 Sophophora
+## 3    Drosophila_algonquin  74469 -1.119279 32.58333 -31.58333 Sophophora
+## 4    Drosophila_ananassae  24717 -5.506854 49.91667 -48.08333 Sophophora
+## 5       Drosophila_anceps  11212 -4.743222 39.91667 -40.41667 Drosophila
+## 6    Drosophila_arawakana  18680 -5.992666 63.08333 -50.91667 Drosophila
+##   MbDNA_Male MbDNA_Female  Tmax  Tmin
+## 1      175.4        173.9 34.07  7.01
+## 2      165.6        168.7 35.06  5.49
+## 3      170.0        156.2 34.81 13.14
+## 4      179.9        169.0 30.13  6.72
+## 5      171.8        159.1 29.14  9.03
+## 6      187.5        165.5 28.80  3.60
+\end{verbatim}
+
+And a quick plot:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#quick plot of two variables}
+\NormalTok{df3 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{latmax, }\AttributeTok{y=}\NormalTok{MbDNA\_Male, }\AttributeTok{colour=}\NormalTok{Tmin)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{size=}\NormalTok{n)) }\SpecialCharTok{+} \FunctionTok{scale\_color\_continuous}\NormalTok{(}\AttributeTok{type =} \StringTok{\textquotesingle{}viridis\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method=}\StringTok{\textquotesingle{}lm\textquotesingle{}}\NormalTok{, }\AttributeTok{formula=}\StringTok{\textquotesingle{}y\textasciitilde{}x\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{theme\_bw}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Drosophila-climatology_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+And all variables that we selected:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df3 }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(latmean, latmax, latmin, MbDNA\_Male, MbDNA\_Female, Tmax, Tmin) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pairs}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Drosophila-climatology_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+I'll let you take it from here Sam! Hopefully this is what you had in
+mind when you asked for help. You can replace other variables in the
+steps above to include annual precipitation, and even monthly
+temperature information. There are many other spatial questions that you
+could ask with such a dataset. \textbf{Good luck!}
+
+\end{document}
