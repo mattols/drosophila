@@ -55,6 +55,8 @@ df_comb %>% ggplot(aes(x = area_mkm2, y = MbDNA_Female)) +
 
 
 
+
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # Figure 6.1 biogeographic distribution count (excluding Antarctic and Oceania)
 ## plot with trend
@@ -63,7 +65,8 @@ df_eco2 <- left_join(df_eco, df_comb %>% select(Species, Subgenus, MbDNA_Male, M
   pivot_longer(cols = !c(Species,Subgenus, MbDNA_Male, MbDNA_Female),
                names_to = "Biogeographic",
                values_to = "values") %>% 
-  filter(Biogeographic == "Afrotropic" | Biogeographic == "Neotropic") %>% 
+  filter(Biogeographic == "Afrotropic" | Biogeographic == "Neotropic") %>%
+  # filter(Biogeographic !="X", Biogeographic !="Oceania", Biogeographic !="Antarctic") %>% 
   mutate(Biogeographic = as.factor(Biogeographic)) %>% 
   filter(values > 0) %>% 
   mutate(values = values/1e6)
@@ -78,15 +81,55 @@ data.label <- df_eco2 %>%
 # plot
 df_eco2 %>% 
   ggplot(aes(x = values, y = MbDNA_Female, colour=Biogeographic)) +
+  labs( #title = "Drosophila distribution and genome size",
+       #subtitle = "by biogeographic region", 
+       y = "MbDNA (Female)",
+       x = bquote("Potential species distribution by temperature tolerance (million"~km^2~")")) +
+  scale_colour_brewer(palette = "Dark2", guide = 'none') +
+  geom_point() + facet_wrap(.~Biogeographic) +
+  geom_smooth(method = "lm", color="red", linetype = "dashed", size = 0.5, formula = y ~ x) +
+  geom_text(data = data.label, aes(x = x , y = y , label = label), size=3.4, parse = TRUE) +
+  theme_minimal() +
+  theme( # legend.text=element_text(size=rel(0.5)),
+        strip.text = element_text(size = 18, margin = margin()))
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# Figure 6.2 NORMALIZED biogeographic distribution count (excluding Antarctic and Oceania)
+## plot with trend
+# join and pivot data
+df_eco2 <- left_join(df_eco, df_comb %>% select(Species, Subgenus, MbDNA_Male, MbDNA_Female), by='Species') %>% 
+  pivot_longer(cols = !c(Species,Subgenus, MbDNA_Male, MbDNA_Female),
+               names_to = "Biogeographic",
+               values_to = "values") %>% 
+  mutate(Biogeographic = if_else(Biogeographic == "Indo.Malay", "Indo-Malay", Biogeographic)) %>% 
+  filter(Biogeographic !="X", Biogeographic !="Oceania", Biogeographic !="Antarctic") %>% 
+  full_join(., df_eco_tot, by = c("Biogeographic" = "realm")) %>% 
+  mutate(values_norm = values / area) %>% 
+  filter(Biogeographic == "Afrotropic" | Biogeographic == "Neotropic") %>%
+  mutate(Biogeographic = as.factor(Biogeographic)) %>% 
+  filter(values > 0) %>% 
+  mutate(values = values/1e6)
+# create labels
+data.label <- df_eco2 %>%
+  group_by(Biogeographic) %>%
+  summarise(
+    x = 0.5,  
+    y = 310,  
+    label = lm_eqn(., values_norm, MbDNA_Female)
+  )
+# plot
+df_eco2 %>% 
+  ggplot(aes(x = values_norm, y = MbDNA_Female, colour=Biogeographic)) +
   labs(title = "Drosophila distribution and genome size",
        subtitle = "by biogeographic region", y = "MbDNA (Female)",
        x = bquote("Area by temperature tolerance (million"~km^2~")")) +
   scale_colour_brewer(palette = "Dark2", guide = 'none') +
   geom_point() + facet_wrap(.~Biogeographic) +
   geom_smooth(method = "lm", color="red", linetype = "dashed", size = 0.5, formula = y ~ x) +
-  geom_text(data = data.label, aes(x = x , y = y , label = label), size=3.2, parse = TRUE) +
+  geom_text(data = data.label, aes(x = x , y = y , label = label), size=3.4, parse = TRUE) +
   theme(legend.text=element_text(size=rel(0.5))) +
   theme_minimal()
+
 
 
 # End
