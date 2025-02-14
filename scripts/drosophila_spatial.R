@@ -90,6 +90,10 @@ for (i in 1:nrow(df_eco)){
   df_eco[i,2:ncol(df_eco)] = t(zonal(dros_dist[[df_eco$Species[i]]]*cz, eco_realm2, fun = "sum", na.rm=T))
 }
 
+# full area of eco-zones (for normalization)
+eco_tot = zonal(cz, eco_realm2, fun = "sum", na.rm=T)
+df_eco_tot = data.frame(realm = eco_realm2$WWF_REALM2, total_area = eco_tot)
+
 # distribution 
 df_eco %>% pivot_longer(cols = !Species,
                         names_to = "Biogeographic",

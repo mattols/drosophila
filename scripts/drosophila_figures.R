@@ -18,6 +18,7 @@ dros_heat   <- rast(file.path(results, "drosophila_heatmap_n67_10m_1.grd"))
 df_comb     <- read.csv(file.path(results, "drosophila_area_table.csv"))
 df_cont     <- read.csv(file.path(results, "drosophila_continent_table.csv"))
 df_eco      <- read.csv(file.path(results, "drosophila_eco_table.csv"))
+df_eco_tot  <- read.csv(file.path(results, "drosophila_eco_tot_table.csv"))
 eco_regions <- st_read(file.path(results, "eco-realm-summary.geojson"))
 
 # # # # # # # # # # # # # # # # # #
