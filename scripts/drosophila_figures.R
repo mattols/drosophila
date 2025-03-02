@@ -138,22 +138,39 @@ df_eco %>%
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # Figure 6. biogeographic distribution count (excluding Antarctic and Oceania)
+data.label <- df_eco2 %>%
+  group_by(Biogeographic) %>%
+  summarise(
+    # x = 0.5,  y = 310,
+    x = 8, y = 300,
+    label = lm_eqn(., values, MbDNA_Female)
+  )
 m1 = left_join(df_eco, df_comb %>% select(Species, Subgenus, MbDNA_Male, MbDNA_Female), by='Species') %>% 
   pivot_longer(cols = !c(Species,Subgenus, MbDNA_Male, MbDNA_Female),
                names_to = "Biogeographic",
                values_to = "values") %>% 
+  mutate(Biogeographic = if_else(Biogeographic == "Indo.Malay", "Indo-Malay", Biogeographic)) %>% 
   filter(Biogeographic != "Antarctic", Biogeographic != "Oceania", Biogeographic != "X"  ) %>% 
   mutate(Biogeographic = as.factor(Biogeographic)) %>% 
   filter(values > 0) %>% 
   mutate(values = values/1e6) %>% 
   ggplot(aes(x = values, y = MbDNA_Female, colour=Biogeographic)) +
-  labs(title = "Drosophila distribution and genome size",
-       subtitle = "by biogeographic region", y = "MbDNA (Female)",
-       x = bquote("Area by temperature tolerance (million"~km^2~")")) +
+  labs( #title = "Drosophila distribution and genome size",
+       # subtitle = "by biogeographic region", 
+      y = "MbDNA (Female)",
+      x =  bquote("Potential species distribution by temperature tolerance (million"~km^2~")")) +
+        # bquote("Area by temperature tolerance (million"~km^2~")")) +
   scale_colour_brewer(palette = "Dark2", guide = 'none') +
   geom_point() + facet_wrap(.~Biogeographic) +
+  
+  geom_smooth(method = "lm", color="firebrick", linetype = "dashed", size = 0.75, formula = y ~ x) +
+  geom_text(data = data.label, aes(x = x , y = y , label = label), size=3.4, parse = TRUE) +
+  
   theme(legend.text=element_text(size=rel(0.5))) +
-  theme_minimal()
+  theme_minimal() + 
+  theme(legend.text=element_text(size=rel(0.5)),
+        strip.text.x = element_text(size = 14),
+        axis.title = element_text( size = 14, face = "bold" )) 
 m2 = eco_regions %>%
   filter(WWF_REALM2 != "Antarctic", WWF_REALM2 != "Oceania" ) %>% 
   st_transform(6933) %>% 
@@ -166,6 +183,12 @@ m2 = eco_regions %>%
   scale_alpha(guide = 'none') +
   theme_minimal() 
 ## plot combined
+png("figs_2025/f6-1-2-MbFem_EcoRegions-Map.png", width = 11, height = 8, unit = "in", res = 300)
 grid.arrange(m1,m2)
+dev.off()
+
+png("figs_2025/f6-1-2-Map.png", width = 10, height = 4, unit = "in", res = 300)
+m2
+dev.off()
 
 ## END
