@@ -20,10 +20,10 @@ gv <- vect(dfg, geom=c("long", "lat"), crs="EPSG:4326")
 # read university data
 pth2 = "/Users/mattolson/src/drosophila-bioclim/data/output/university_loc_rankings.csv"
 dfr = read.csv(pth2)
-dfr = dfr[dfr$Rank<=1000, ]
+# dfr = dfr[dfr$Rank<=1000, ]
 head(dfr);dim(dfr)
-uv <- vect(dfr[dfr$Rank<=2000, ], geom=c("long", "lat"), crs="EPSG:4326")
-
+uv <- vect(dfr[dfr$Rank<=500, ], geom=c("long", "lat"), crs="EPSG:4326")
+dim(uv)
 
 # WINDOW
 # results     <- "~/data/drosophila/results/data_1024"
@@ -38,13 +38,26 @@ uv <- vect(dfr[dfr$Rank<=2000, ], geom=c("long", "lat"), crs="EPSG:4326")
 # https://gis.stackexchange.com/questions/421257/plot-filtered-patch-sizes-in-r-terra
 r = rast("~/data/drosophila/worldclim_05/wc2.1_10m/wc2.1_10m_bio_1.tif")
 ry = patches(r)
-z = cellSize(ry,unit="ha") |> zonal(ry, sum)
-head(z);dim(z)
+# z = cellSize(ry,unit="ha") |> zonal(ry, sum)
+# head(z);dim(z)
+# remove greenland and antarctica
+plot(ry == 1634 )
+plot(ry == 1 )
+ry[ry==1 | ry>=1634] = NA
+
 rz = zonal(cellSize(ry,unit="km"), ry, sum, as.raster=TRUE)
 rz
 plot(rz)
+
+# size of island to eliminate?
+quantile(unique(values(rz)), na.rm=T)
+hist(values(rz)) 
+plot(rz<120000) # 1.2e05 keep iceland and SE ASIA
+plot(rz<=1e06) # aggressive (eliminate Iceland, NZ, Indonesia, Madagascar)
+plot(gv,add=T,cex=0.6)
+
 # remove small patches
-s = ifel(rz < 10, NA, 1)
+s = ifel(rz < 1.2e5, NA, 1)
 plot(s)
 sp1 = as.polygons(s)
 sp2 = project(sp1, "EPSG:6933")
