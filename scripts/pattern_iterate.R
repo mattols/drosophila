@@ -41,8 +41,9 @@ sum(length(gv[gv$eco=="Oceania",1]))
 ## BY ECO REALM
 
 # select one ecorealm
-uv <- vect(dfr[dfr$Rank<=100, ], geom=c("long", "lat"), crs="EPSG:4326")
-for(ue in unique(eco_realm2$WWF_REALM2)){
+uv <- vect(dfr[dfr$Rank<=500, ], geom=c("long", "lat"), crs="EPSG:4326")
+ue_names = setdiff(unique(eco_realm2$WWF_REALM2), c("Antarctic", "Oceania"))
+for(ue in ue_names){
   
   print(paste("...running realm:", ue,"or", match(ue, unique(eco_realm2$WWF_REALM2)), "of", length(unique(eco_realm2$WWF_REALM2))))
   
@@ -68,7 +69,7 @@ for(ue in unique(eco_realm2$WWF_REALM2)){
   }
   
 }
-
+head(df_eco_cross)
 
 
 # BY DISTANCE TO UNIVERSITY
@@ -104,6 +105,8 @@ head(df_cross);dim(df_cross)
 plot(df_cross)
 
 
+# saveRDS(df_cross, "/Users/mattolson/data/drosophila/results/k/df_cross_1500.rds")
+readRDS("/Users/mattolson/data/drosophila/results/k/df_cross_1500.rds")
 
 prep_k_data <- function(univ_vect, gbif_vect, sp2){
   #
@@ -209,6 +212,184 @@ ggplot(df_long[complete.cases(df_long$variable),], aes(x = r, y = value,
   scale_linetype_manual(values = line_types) +
   labs(x = "r", y = "Value", color = "University Rank", linetype = "Variable") +
   theme_minimal() #+
-  facet_wrap(~univ_rank)
+  # facet_wrap(~univ_rank)
 
 
+  
+  
+  
+  
+  
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# 1. Reshape to long format
+df_long <- df_cross %>%
+  # pivot_longer(cols = c(theo, trans, border),
+  # pivot_longer(cols = c(theo, trans),
+  pivot_longer(cols = c(theo, border),
+               names_to = "variable",
+               values_to = "value")
+
+# 2. Normalize: subtract the value at r = 0 within each group
+df_long_norm <- df_long %>%
+  group_by(univ_rank, variable) %>%
+  mutate(value_norm = value - value[r == 0]) %>%
+  ungroup()
+
+# 3. Define linetypes
+line_types <- c(
+  "theo" = "dotted",
+  "trans" = "solid",
+  "border" = "dashed"
+)
+
+# 4. Plot
+ggplot(df_long_norm, aes(x = r, y = value_norm,
+                         color = univ_rank,
+                         linetype = variable,
+                         group = interaction(univ_rank, variable))) +
+  geom_line(linewidth = 1) +
+  scale_linetype_manual(values = line_types) +
+  labs(x = "r", y = "Normalized Value (centered at r = 0)",
+       color = "University Rank", linetype = "Model") +
+  theme_minimal()
+
+
+
+
+
+
+
+
+
+
+# # # # # # # # # # #
+
+# 1. Compute relative values to theo
+df_relative <- df_cross %>%
+  mutate(trans = trans - theo,
+         border = border - theo,
+         iso = iso - theo,
+         theo = 0)  # Set theo as the baseline (0)
+
+# 2. Pivot to long format
+df_long <- df_relative %>%
+  # pivot_longer(cols = c(theo, trans, border),
+  # pivot_longer(cols = border,
+  pivot_longer(cols = iso,
+               names_to = "variable",
+               values_to = "value")
+
+# 3. Line type mapping
+line_types <- c(
+  "theo" = "dotted",
+  "trans" = "solid",
+  "border" = "dashed"
+)
+
+df_long <- df_long %>%
+  mutate(univ_rank = as.factor(univ_rank))
+
+# Plot
+p1 = ggplot(df_long, aes(x = r, y = value,
+                    color = univ_rank)) +
+                    # linetype = variable,
+                    # group = interaction(univ_rank, variable))) +
+  # geom_line(linewidth = 1) +
+  geom_line() +
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+  # Option 1 (automatic greyscale)
+  scale_color_grey(start = 0.1, end = 0.7) +
+  # Option 2 (comment out one of these)
+  # scale_color_manual(values = c("#000000", "#4D4D4D", "#7F7F7F", "#B2B2B2", "#D9D9D9")) +
+  # scale_linetype_manual(values = line_types) +
+  labs(x = "r (km)",
+       # y = expression(hat(L)),
+       y = expression(hat(L)[obs/univ]),
+       # y = "L̂[observations near universities]",
+       # y = "L̂ (univ,obs)",
+       # y = expression(hat(L)[observations * " near " * universities]),
+       color = "Rank") +
+  # xlim(0, 1750) +
+  theme(
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    # legend.position = "inside",
+    legend.position.inside = c(0.2,0.8),
+    legend.background = element_rect(fill = "white", color = "black")
+  ) +
+  theme_bw()
+
+p1
+
+svpth = "~/src/drosophila/figs_0625"
+ggsave(file.path(svpth, "L_iso_rank.png"), p1, width = 5, height = 6, dpi = 300, bg = "white")
+
+
+  
+
+
+# # # # # # # # # # 
+### ECO FIGS
+
+
+
+# # # # # # # # # # #
+
+# 1. Compute relative values to theo
+df_relative <- df_eco_cross %>%
+  mutate(trans = trans - theo,
+         border = border - theo,
+         iso = iso - theo,
+         theo = 0)  # Set theo as the baseline (0)
+
+# 2. Pivot to long format
+df_long <- df_relative %>%
+  # pivot_longer(cols = c(theo, trans, border),
+  # pivot_longer(cols = border,
+  # pivot_longer(cols = trans,
+  pivot_longer(cols = iso,
+               names_to = "variable",
+               values_to = "value")
+
+
+df_long <- df_long %>%
+  mutate(realm = as.factor(realm))
+
+# Plot
+p2 = ggplot(df_long, aes(x = r, y = value,
+                         color = realm)) +
+  # linetype = variable,
+  # group = interaction(univ_rank, variable))) +
+  # geom_line(linewidth = 1) +
+  geom_line() +
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+  # Option 1 (automatic greyscale)
+  scale_fill_brewer(palette = "Dark2") +
+  # scale_color_grey(start = 0.1, end = 0.7) +
+  # Option 2 (comment out one of these)
+  # scale_color_manual(values = c("#000000", "#4D4D4D", "#7F7F7F", "#B2B2B2", "#D9D9D9")) +
+  # scale_linetype_manual(values = line_types) +
+  labs(x = "r (km)",
+       # y = expression(hat(L)),
+       y = expression(hat(L)[obs/univ]),
+       # y = "L̂[observations near universities]",
+       # y = "L̂ (univ,obs)",
+       # y = expression(hat(L)[observations * " near " * universities]),
+       color = "Region") +
+  # xlim(0, 1750) +
+  theme(
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    # legend.position = "inside",
+    legend.position.inside = c(0.2,0.8),
+    legend.background = element_rect(fill = "white", color = "black")
+  ) +
+  theme_bw()
+
+p2
+
+svpth = "~/src/drosophila/figs_0625"
+ggsave(file.path(svpth, "L_iso_500u_bioregion.png"), p2, width = 5, height = 6, dpi = 300, bg = "white")
