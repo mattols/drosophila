@@ -8,6 +8,7 @@ library(spatstat)
 library(dplyr)
 
 # pth = "/Users/mattolson/src/drosophila-bioclim/data/output/all.drosophila.gbif.csv"
+eco_realm2 = vect("/Users/mattolson/src/drosophila-bioclim/data/dros_spatial/eco-realm2.geojson")
 pth = "/Users/mattolson/src/drosophila-bioclim/data/output/all.locale.gbif.csv"
 pth2 = "/Users/mattolson/src/drosophila-bioclim/data/output/university_loc_rankings.csv"
 
@@ -71,10 +72,14 @@ for(ue in ue_names){
 }
 head(df_eco_cross)
 
+# saveRDS(df_eco_cross, "/Users/mattolson/data/drosophila/results/k/df_eco_cross.rds")
+df_cross = readRDS("/Users/mattolson/data/drosophila/results/k/df_eco_cross.rds")
+
 
 # BY DISTANCE TO UNIVERSITY
 # 100, 500, 1000, 1500
-univ_lists = c(10, 25, 50, 100, 500, 1000, 1500, dim(dfr)[1]+1) # Inf) 
+# univ_lists = c(10, 25, 50, 100, 500, 1000, 1500, dim(dfr)[1]+1) # Inf) 
+univ_lists = c(10, 25, 50, 100, 500, 1000, 1500)  
 # cross_list = list()
 # df_cross = data.frame()
 for (rank_level in univ_lists){
@@ -106,7 +111,7 @@ plot(df_cross)
 
 
 # saveRDS(df_cross, "/Users/mattolson/data/drosophila/results/k/df_cross_1500.rds")
-readRDS("/Users/mattolson/data/drosophila/results/k/df_cross_1500.rds")
+df_cross = readRDS("/Users/mattolson/data/drosophila/results/k/df_cross_1500.rds")
 
 prep_k_data <- function(univ_vect, gbif_vect, sp2){
   #
@@ -266,16 +271,20 @@ ggplot(df_long_norm, aes(x = r, y = value_norm,
 
 
 # # # # # # # # # # #
+library(tidyr);library(ggplot2)
+
+
+######### HERERERE
 
 # 1. Compute relative values to theo
-df_relative <- df_cross %>%
+df_relative1 <- df_cross %>%
   mutate(trans = trans - theo,
          border = border - theo,
          iso = iso - theo,
          theo = 0)  # Set theo as the baseline (0)
 
 # 2. Pivot to long format
-df_long <- df_relative %>%
+df_long1 <- df_relative1 %>%
   # pivot_longer(cols = c(theo, trans, border),
   # pivot_longer(cols = border,
   pivot_longer(cols = iso,
@@ -289,11 +298,11 @@ line_types <- c(
   "border" = "dashed"
 )
 
-df_long <- df_long %>%
+df_long1 <- df_long1 %>%
   mutate(univ_rank = as.factor(univ_rank))
 
 # Plot
-p1 = ggplot(df_long, aes(x = r, y = value,
+p1 = ggplot(df_long1, aes(x = r, y = value,
                     color = univ_rank)) +
                     # linetype = variable,
                     # group = interaction(univ_rank, variable))) +
@@ -313,14 +322,17 @@ p1 = ggplot(df_long, aes(x = r, y = value,
        # y = expression(hat(L)[observations * " near " * universities]),
        color = "Rank") +
   # xlim(0, 1750) +
+  theme_bw() +
   theme(
+    axis.text.x = element_text(size = 14),  # X-axis tick labels
+    axis.text.y = element_text(size = 14),   # Y-axis tick labels
     axis.title.x = element_text(size = 16),
     axis.title.y = element_text(size = 16),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
     # legend.position = "inside",
-    legend.position.inside = c(0.2,0.8),
-    legend.background = element_rect(fill = "white", color = "black")
-  ) +
-  theme_bw()
+    legend.position = c(0.1,0.75),
+    legend.background = element_rect(fill = "white", color = "black"))
 
 p1
 
@@ -361,35 +373,69 @@ df_long <- df_long %>%
 # Plot
 p2 = ggplot(df_long, aes(x = r, y = value,
                          color = realm)) +
-  # linetype = variable,
-  # group = interaction(univ_rank, variable))) +
-  # geom_line(linewidth = 1) +
   geom_line() +
   geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
-  # Option 1 (automatic greyscale)
-  scale_fill_brewer(palette = "Dark2") +
-  # scale_color_grey(start = 0.1, end = 0.7) +
-  # Option 2 (comment out one of these)
-  # scale_color_manual(values = c("#000000", "#4D4D4D", "#7F7F7F", "#B2B2B2", "#D9D9D9")) +
-  # scale_linetype_manual(values = line_types) +
+  scale_color_brewer(palette = "Dark2") +
   labs(x = "r (km)",
-       # y = expression(hat(L)),
        y = expression(hat(L)[obs/univ]),
-       # y = "L̂[observations near universities]",
-       # y = "L̂ (univ,obs)",
-       # y = expression(hat(L)[observations * " near " * universities]),
        color = "Region") +
-  # xlim(0, 1750) +
+  theme_bw() +
   theme(
+    axis.text.x = element_text(size = 14),  # X-axis tick labels
+    axis.text.y = element_text(size = 14),   # Y-axis tick labels
     axis.title.x = element_text(size = 16),
     axis.title.y = element_text(size = 16),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
     # legend.position = "inside",
-    legend.position.inside = c(0.2,0.8),
-    legend.background = element_rect(fill = "white", color = "black")
-  ) +
-  theme_bw()
+    legend.position = c(0.15,0.80),
+    legend.background = element_rect(fill = "white", color = "black"))
 
 p2
 
 svpth = "~/src/drosophila/figs_0625"
 ggsave(file.path(svpth, "L_iso_500u_bioregion.png"), p2, width = 5, height = 6, dpi = 300, bg = "white")
+
+
+
+library(patchwork)
+
+# Combine side-by-side
+combined_plot <- p1 + p2
+
+# Save
+# ggsave("combined_plot.png", combined_plot, width = 12, height = 6, dpi = 300)
+svpth = "~/src/drosophila/figs_0625"
+ggsave(file.path(svpth, "L_iso_univ_bio.png"), combined_plot, width = 12, height = 6, dpi = 300, bg = "white")
+
+#
+
+
+
+
+
+
+df_long %>%  filter(realm != "Antarctic", realm != "Oceania" ) %>%
+  mutate(realm = as.factor(realm)) %>% 
+  ggplot(aes(x = r, y = value,
+                    color = realm)) +
+  scale_color_brewer(palette = "Dark2") +
+  geom_line(aes(color = realm)) +
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+
+  labs(x = "r (km)",
+       y = expression(hat(L)[obs/univ]),
+       color = "Region") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(size = 14),  # X-axis tick labels
+    axis.text.y = element_text(size = 14),   # Y-axis tick labels
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    # legend.position = "inside",
+    legend.position = c(0.15,0.80),
+    legend.background = element_rect(fill = "white", color = "black"))
+ 
+

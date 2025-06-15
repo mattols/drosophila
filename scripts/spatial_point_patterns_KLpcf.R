@@ -102,16 +102,17 @@ sum(duplicated(obs_coords))
 sum(duplicated(school_coords))
 
 obs_coords = obs_coords[!duplicated(obs_coords[, c("x","y")]),]
+obs_ppp <- ppp(obs_coords$x, obs_coords$y, window = my_window)
 
-obs_ppp <- ppp(obs_coords$x, obs_coords$y, window = owin(c(min(obs_coords$x), max(obs_coords$x)), 
-                                                         c(min(obs_coords$y), max(obs_coords$y))))
-school_ppp <- ppp(school_coords$x, school_coords$y, window = owin(c(min(school_coords$x), max(school_coords$x)), 
-                                                                  c(min(school_coords$y), max(school_coords$y))))
+# obs_ppp <- ppp(obs_coords$x, obs_coords$y, window = owin(c(min(obs_coords$x), max(obs_coords$x)), 
+#                                                          c(min(obs_coords$y), max(obs_coords$y))))
+# school_ppp <- ppp(school_coords$x, school_coords$y, window = owin(c(min(school_coords$x), max(school_coords$x)), 
+#                                                                   c(min(school_coords$y), max(school_coords$y))))
 
 # add jitter - DID NOT WORK (only 4 and 7 repeats so relatively small)
-o_coords <-  coords(obs_ppp)
-o_coords_jitter <- o_coords + runif(length(o_coords), -0.000005, 0.000005)
-o_ppp_jitt <- ppp(o_coords_jitter[,1], o_coords_jitter[,2], window = obs_ppp$window)
+# o_coords <-  coords(obs_ppp)
+# o_coords_jitter <- o_coords + runif(length(o_coords), -0.000005, 0.000005)
+# o_ppp_jitt <- ppp(o_coords_jitter[,1], o_coords_jitter[,2], window = obs_ppp$window)
 # none
 # s_coords <-  coords(school_ppp)
 # s_coords_jitter <- s_coords + runif(length(s_coords), -0.00005, 0.00005)
@@ -122,8 +123,11 @@ sum(duplicated(o_coords_jitter))
 
 
 
-gbif.km <- rescale(o_ppp_jitt, 1000, "km")
+gbif.km <- rescale(obs_ppp, 1000, "km")
 univ.km <- rescale(school_ppp, 1000, "km")
+
+
+
 
 # ppp_obs = gbif.km
 # ppp_univ = univ.km
@@ -184,9 +188,43 @@ plot(env_cross,. -r ~ r)
 
 
 
+# PCF
+pcf_univ_obs <- pcfcross(ppp_all, i = "univ", j = "obs")
+
+svpth = "~/src/drosophila/figs_0625"
+png(file.path(svpth, "pcf_global_univ_obs_2.png"), width = 8, height=6, unit="in", res=300)
+plot(pcf_univ_obs, main=NULL, lwd=2, axes=F, col=c("black", "firebrick", "grey"))
+axis(1, cex=1.3)
+axis(2, cex=1.3)
+box()
+dev.off()
+
+head(as.data.frame(pcf_univ_obs), 20)
+# r  6.471837    - 108.00851
+
+
+pcf_univ_obs_inhom <- pcfcross.inhom(ppp_all, i = "univ", j = "obs")
+
+svpth = "~/src/drosophila/figs_0625"
+png(file.path(svpth, "pcf_inhom_global_univ_obs_2.png"), width = 8, height=6, unit="in", res=300)
+plot(pcf_univ_obs_inhom, main=NULL, lwd=2, axes=F, col=c("black", "firebrick", "grey"))
+axis(1, cex=1.3)
+axis(2, cex=1.3)
+box()
+dev.off()
+head(as.data.frame(pcf_univ_obs_inhom), 20)
 
 
 
+
+png(file.path(svpth, "pcf_global_univ_obs_comb.png"), width = 10, height=5, unit="in", res=300)
+par(mfrow=c(1,2))
+plot(pcf_univ_obs, main=NULL, lwd=2, axes=F, col=c("black", "firebrick", "grey"), legendpos="topright")
+# plot(pcf_univ_obs, legend.only=T, legend.position="topright", plot=F)
+axis(1, cex=1.3):axis(2, cex=1.3);box()
+plot(pcf_univ_obs_inhom, main=NULL, lwd=2, axes=F, col=c("black", "firebrick", "grey"), legend=F)
+axis(1, cex=1.3):axis(2, cex=1.3);box()
+dev.off()
 
 #### EXTRAS - in case
 
