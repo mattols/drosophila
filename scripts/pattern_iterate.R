@@ -12,6 +12,8 @@ eco_realm2 = vect("/Users/mattolson/src/drosophila-bioclim/data/dros_spatial/eco
 pth = "/Users/mattolson/src/drosophila-bioclim/data/output/all.locale.gbif.csv"
 pth2 = "/Users/mattolson/src/drosophila-bioclim/data/output/university_loc_rankings.csv"
 
+eco_simple2 = vect(ms_simplify(st_as_sf(eco_realm2)))
+
 # GBIF DATA
 dfg = read.csv(pth)
 gv <- vect(dfg, geom=c("long", "lat"), crs="EPSG:4326")
