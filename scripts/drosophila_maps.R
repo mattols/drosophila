@@ -10,7 +10,7 @@ library(sf);library(terra);library(dplyr)
 library(ggplot2);library(gridExtra);library(tidyterra)
 
 # load output data for plotting
-results     <- "./data"
+results     <- "../../data/drosophila/results/data/"
 dfgs        <- read.csv(file.path(results, "dros_gs_occur_june.csv")) # OLD DATA
 world       <- read_sf(file.path(results, "world-simple.geojson"))
 dros_heat   <- rast(file.path(results, "drosophila_heatmap_n67_10m_1.grd"))

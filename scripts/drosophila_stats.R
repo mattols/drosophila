@@ -22,14 +22,13 @@ lm_eqn <- function(df, x, y){
   m <- lm(y ~ x, df)
   pval <- summary(m)$coefficients[2, 4]
   r2 <- summary(m)$r.squared
-  eq <- substitute( italic(y) == a ~italic(x) + b * "," ~ italic(pvalue) ~ "=" ~ pval * "," ~ italic(r)^2 ~ "=" ~ r2, 
+  eq <- substitute( italic(y) == a ~italic(x) + b * "\n" ~ italic(pvalue) ~ "=" ~ pval * "\n" ~ italic(r)^2 ~ "=" ~ r2, 
                    list(a = format(unname(coef(m)[2]), digits = 2),
                         b = format(unname(coef(m)[1]), digits = 2),
                         pval = format(pval, digits = 3),
                         r2 = format(r2, digits = 2) ) )
   as.character(as.expression(eq))
 }
-
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Figure 2.1 MbDna female vs temperature-based area distribution (WorldClim)
@@ -50,7 +49,7 @@ df_comb %>% ggplot(aes(x = area_mkm2, y = MbDNA_Female)) +
   ) + 
   geom_smooth(method = "lm", color="red", linetype = "dashed", size = 0.5, formula = y ~ x) +
   geom_text(data = data.label, aes(x = x , y = y , label = label), size=4, parse = TRUE) +
-  geom_point() + theme_minimal() +
+  geom_point(pch=1, size=2) + theme_minimal() +
   scale_color_viridis_c()
 
 

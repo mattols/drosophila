@@ -138,7 +138,23 @@ df_eco %>%
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # Figure 6. biogeographic distribution count (excluding Antarctic and Oceania)
-data.label <- df_eco2 %>%
+# lm_eqn <- function(df, x, y){
+#   m <- lm(y ~ x, df)
+#   pval <- summary(m)$coefficients[2, 4]
+#   r2 <- summary(m)$r.squared
+#   eq <- substitute( italic(y) == a ~italic(x) + b * "\n" ~ italic(pvalue) ~ "=" ~ pval * "\n" ~ italic(r)^2 ~ "=" ~ r2, 
+#                     list(a = format(unname(coef(m)[2]), digits = 2),
+#                          b = format(unname(coef(m)[1]), digits = 2),
+#                          pval = format(pval, digits = 3),
+#                          r2 = format(r2, digits = 2) ) )
+#   as.character(as.expression(eq))
+# }
+data.label <- df_eco %>% 
+  pivot_longer(cols = !Species,
+               names_to = "Biogeographic",
+               values_to = "values") %>% 
+  mutate(values = values/1e6) %>% 
+  filter(Biogeographic != "Antarctic", Biogeographic != "Oceania" ) %>%
   group_by(Biogeographic) %>%
   summarise(
     # x = 0.5,  y = 310,
@@ -183,9 +199,9 @@ m2 = eco_regions %>%
   scale_alpha(guide = 'none') +
   theme_minimal() 
 ## plot combined
-png("figs_2025/f6-1-2-MbFem_EcoRegions-Map.png", width = 11, height = 8, unit = "in", res = 300)
+# png("figs_2025/f6-1-2-MbFem_EcoRegions-Map.png", width = 11, height = 8, unit = "in", res = 300)
 grid.arrange(m1,m2)
-dev.off()
+# dev.off()
 
 png("figs_2025/f6-1-2-Map.png", width = 10, height = 4, unit = "in", res = 300)
 m2
