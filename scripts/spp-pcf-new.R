@@ -5,7 +5,7 @@
 
 library(terra);library(sf)
 library(spatstat)
-library(dplyr)
+library(dplyr);library(tidyr)
 
 # # # # # # # # # SET UP DATA # # # # # # # # #
 
@@ -25,7 +25,7 @@ pop20 = pop[pop$global_ppp_2022_1km_UNadj_constrained>20000,]
 #
 # plot(sp2, col=adjustcolor('navajowhite', 0.3), main="Population")
 # plot(project(pop3, sp2),"global_ppp_2022_1km_UNadj_constrained", add=T)
-
+library(rmapshaper)
 eco_simple2 = vect(ms_simplify(st_as_sf(eco_realm2)))
 
 # GBIF DATA
@@ -222,18 +222,20 @@ df_long1 <- df_long1 %>%
 # Plot
 df_long1 %>% 
   filter(variable=='trans') %>%
-  filter(univ_rank%in%c(10, 100, 1000)) %>%
-  # filter(univ_rank==10) %>%
+  # filter(univ_rank%in%c(10, 100, 1000)) %>%
+  filter(univ_rank%in%c(100, 500, 1000)) %>%
+  filter(univ_rank==1000) %>%
   ggplot( aes(x = r, y = value,
                           color = univ_rank)) +
   geom_line(linewidth=1.2) +
   geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+  geom_vline(xintercept = 0, color = "black", linewidth = 0.5) +
   # Option 1 (automatic greyscale)
   scale_color_grey(start = 0.1, end = 0.7) +
   labs(x = "r (km)",
        y = expression(hat(g)[obs/univ]),
        color = "Rank") +
-  ylim(c(0,1e5)) +
+  # ylim(c(0,1e5)) +
   theme_classic() +
   theme(
     axis.text.x = element_text(size = 14),  # X-axis tick labels
@@ -285,9 +287,10 @@ for (pop_level in pop_lists){
 }
 # names(L_obs_cross)
 head(df_cross_pop);dim(df_cross_pop)
+names(df_cross_pop) = c("r", "theo", "trans", "iso", "pop")
 
 # saveRDS(df_cross_pop, "/Users/mattolson/data/drosophila/results/k/dfcross_pop_pcf.rds")
-
+df_cross_pop <- readRDS("/Users/mattolson/data/drosophila/results/k/dfcross_pop_pcf.rds")
 
 # 1. Compute relative values to theo
 
@@ -342,7 +345,106 @@ df_long1 %>%
 
 
 
+# @ # @ # @ # @ #@ #@ #@#@ #@ 
+
+
+# COMBINED
+
+merge(df_cross[,c('r', 'trans', 'univ_rank')],
+      df_cross_pop[,c('r', 'trans', 'pop')], by='r', all=T)
+
+# Assume df_cross has: r, trans, univ_rank
+# Assume df_cross_pop has: r, trans, pop
+
+df_cross$univ_rank==500
+df_cross_pop$pop==10000
+# Rename trans in each before merging to distinguish them
+df1 <- df_cross[,c('r', 'trans', 'univ_rank')]
+names(df1)[names(df1) == "trans"] <- "trans_univ"
+
+df2 <- df_cross_pop[,c('r', 'trans', 'pop')]
+names(df2)[names(df2) == "trans"] <- "trans_pop"
+
+# Merge by r
+merged <- merge(df1, df2, by = "r", all = TRUE)
+
+library(reshape2)
+
+# Melt the data to long format, keeping 'r', 'univ_rank', and 'pop'
+long_df <- melt(merged,
+                id.vars = c("r", "univ_rank", "pop"),
+                measure.vars = c("trans_univ", "trans_pop"),
+                variable.name = "trans_type",
+                value.name = "trans")
+
+library(dplyr)
+
+long_df <- long_df %>%
+  mutate(
+    group_label = case_when(
+      trans_type == "trans_univ" & !is.na(univ_rank) ~ paste0("u", univ_rank),
+      trans_type == "trans_pop" & !is.na(pop) ~ paste0("pop", round(pop)),
+      TRUE ~ NA_character_
+    )
+  )
+
+plot_df <- long_df %>%
+  filter(group_label %in% c("u500", "pop10000"))
+
+library(ggplot2)
+
+df1 <- long_df %>% 
+  filter(group_label %in% c("u1000", "pop10000")) %>%
+  # filter(group_label %in% c("u500", "pop10000")) %>%
+  mutate(group_label = ifelse(group_label=='u1000', 'Top 500 universities', 
+                              ifelse(group_label=='pop10000', 'Pop > 10,000', group_label))) %>% 
+  filter(is.finite(trans)) %>% select(r, trans,group_label)
+
+df1 <- long_df %>% 
+  filter(group_label %in% c("u1000", "pop10000")) %>%
+  mutate(group_label = recode(group_label,
+                              'u1000' = 'Top 500 universities',
+                              'pop10000' = 'Pop > 10,000')) %>%
+  filter(is.finite(trans)) %>%
+  select(r, trans, group_label) %>%
+  mutate(group_label = factor(group_label)) 
+  
+graphics.off()
+
+long_df %>% 
+  filter(group_label %in% c("u500", "pop10000")) %>%
+  # filter(group_label %in% c("u500", "pop10000")) %>%
+  mutate(group_label = ifelse(group_label=='u500', 'Top 1000 universities', 
+                              ifelse(group_label=='pop10000', 'Pop > 10,000', group_label))) %>% 
+  filter(is.finite(trans)) %>% select(r, trans,group_label) %>% 
+  ggplot(aes(x = r, y = trans, color = group_label)) +
+  geom_line(linewidth = 1) +
+  ylim(c(0,100)) +
+  xlim(c(0,2000)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  labs(title = "Cross pair correlation (Universities & Population vs. GBIF observations)", color = "Group") +
+  theme_classic(base_size = 14) +  # black-and-white theme with larger base font
+  theme(
+    strip.text = element_text(size = 16, face = "bold"),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 14),
+    panel.grid = element_blank()
+  )
+
+
+png("figs_0725/pcf_all_p10000_u1000.png", width = 8, height = 6, unit = "in", res = 300)
+
+# add horizontal and vertical lines at 0
+
+
+
+
 # # # # # # # # # ECO Runs # # # # # # # # #
+
+# UNIVERSITY ECO
+
+
 # classify points in eco
 gv$eco = NA
 for(ue in unique(eco_realm2$WWF_REALM2)){
@@ -361,20 +463,20 @@ for(ue in ue_names){
   print(paste("...running realm:", ue,"or", match(ue, unique(eco_realm2$WWF_REALM2)), "of", length(unique(eco_realm2$WWF_REALM2))))
   
   # subsets
-  uv_sub = uv[eco_realm2[eco_realm2$WWF_REALM2==ue],]
-  gv_sub = gv[eco_realm2[eco_realm2$WWF_REALM2==ue],]
+  uv_sub = uv[eco_simple2[eco_simple2$WWF_REALM2==ue],]
+  gv_sub = gv[eco_simple2[eco_simple2$WWF_REALM2==ue],]
   
   # prep data
   cross_eco_all = prep_k_data(uv_sub, gv_sub, sp2)
   
   # run cross
-  L_eco_cross <- Lcross(cross_eco_all, i = "univ", j = "obs")
-  # cross_list[match(rank_level, univ_lists)] <- L_obs_cross
+  # L_eco_cross <- Lcross(cross_eco_all, i = "univ", j = "obs")
+  L_eco_cross <- pcfcross.inhom(cross_eco_all, i = "univ", j = "obs")
   
   L_eco_cross = as.data.frame(L_eco_cross)
   L_eco_cross$realm = ue
   
-  if(match(ue, unique(eco_realm2$WWF_REALM2))==1){
+  if(match(ue, unique(eco_simple2$WWF_REALM2))==1){
     df_eco_cross = L_eco_cross
   }else{
     # c("r", "theo", "border", "trans", "iso")
@@ -384,9 +486,138 @@ for(ue in ue_names){
 }
 head(df_eco_cross)
 
-# saveRDS(df_eco_cross, "/Users/mattolson/data/drosophila/results/k/df_eco_cross.rds")
-df_cross = readRDS("/Users/mattolson/data/drosophila/results/k/df_eco_cross.rds")
-
+# saveRDS(df_eco_cross, "/Users/mattolson/data/drosophila/results/k/df_eco_pcf.rds")
+df_cross = readRDS("/Users/mattolson/data/drosophila/results/k/df_eco_pcf.rds")
 
 # PLOTS
-df_eco_cross
+df_long_e <- df_eco_cross %>%
+  pivot_longer(cols = !c(r, realm),
+               names_to = "variable",
+               values_to = "value")
+
+# Plot
+pe1 = df_long_e %>% 
+  # mutate(univ_rank = as.factor(realm)) %>% 
+  filter(variable=='trans') %>%
+  # filter(univ_rank%in%c(10000, 20000)) %>%
+  # filter(univ_rank==10000) %>%
+  ggplot( aes(x = r, y = value,
+              color = realm)) +
+  geom_line(linewidth=1.2) +
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+  geom_vline(xintercept = 0, color = "black", linewidth = 0.5) +
+  # Option 1 (automatic greyscale)
+  scale_color_grey(start = 0.1, end = 0.7) +
+  labs(x = "r (km)",
+       y = expression(hat(g)[obs/univ]),
+       color = "Realm") +
+  # ylim(c(0,1e5)) +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(size = 14),  # X-axis tick labels
+    axis.text.y = element_text(size = 14),   # Y-axis tick labels
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(1,"cm"),
+    # legend.position = "inside",
+    legend.position = c(0.8,0.85),
+    legend.background = element_rect(fill = "white", color = "black")) +
+  guides(linetype = guide_legend(override.aes = list(linewidth = 4)))
+
+pe1
+
+png("./figs_0725/pcf_all_p10000_u500.png", pe1, width = 8, height = 6, unit = "in", res = 300)
+
+
+# # # # # # # # # ECO Runs # # # # # # # # #
+
+# POPULATION
+# FIXED at 1000 Universities (10, 100, 1000)
+pop2 = pop[pop$global_ppp_2022_1km_UNadj_constrained>10000,]
+pop20 = pop[pop$global_ppp_2022_1km_UNadj_constrained>20000,]
+ue_names = setdiff(unique(eco_realm2$WWF_REALM2), c("Antarctic", "Oceania"))
+#
+# LOOP
+for(ue in ue_names){
+  
+  print(paste("...running realm:", ue,"or", match(ue, unique(eco_realm2$WWF_REALM2)), "of", length(unique(eco_realm2$WWF_REALM2))))
+  
+  # subsets
+  uv_sub = uv[eco_simple2[eco_simple2$WWF_REALM2==ue],]
+  gv_sub = gv[eco_simple2[eco_simple2$WWF_REALM2==ue],]
+  
+  # prep data
+  cross_eco_all = prep_k_data(pop20, gv_sub, sp2)
+  
+  # run cross
+  # L_eco_cross <- Lcross(cross_eco_all, i = "univ", j = "obs")
+  L_eco_cross <- pcfcross.inhom(cross_eco_all, i = "univ", j = "obs")
+  
+  L_eco_cross = as.data.frame(L_eco_cross)
+  L_eco_cross$realm = ue
+  
+  if(match(ue, unique(eco_simple2$WWF_REALM2))==1){
+    df_eco_pop = L_eco_cross
+  }else{
+    # c("r", "theo", "border", "trans", "iso")
+    df_eco_pop = rbind(df_eco_cross, L_eco_cross)
+  }
+  
+}
+head(df_eco_pop)
+
+# saveRDS(df_eco_pop, "/Users/mattolson/data/drosophila/results/k/df_eco_pcf_pop10.rds")
+# saveRDS(df_eco_pop, "/Users/mattolson/data/drosophila/results/k/df_eco_pcf_pop20.rds")
+df_eco_pop = readRDS("/Users/mattolson/data/drosophila/results/k/df_eco_pcf_pop20.rds")
+
+# PLOTS
+df_long_ep <- df_eco_pop %>%
+  pivot_longer(cols = !c(r, realm),
+               names_to = "variable",
+               values_to = "value")
+
+# Plot
+df_long_ep %>% 
+  # mutate(univ_rank = as.factor(realm)) %>% 
+  filter(variable=='trans') %>%
+  # filter(univ_rank%in%c(10000, 20000)) %>%
+  # filter(univ_rank==10000) %>%
+  ggplot( aes(x = r, y = value,
+              color = realm)) +
+  geom_line(linewidth=1.2) +
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+  geom_vline(xintercept = 0, color = "black", linewidth = 0.5) +
+  # Option 1 (automatic greyscale)
+  scale_color_grey(start = 0.1, end = 0.7) +
+  labs(x = "r (km)",
+       y = expression(hat(g)[obs/univ]),
+       color = "Realm") +
+  # ylim(c(0,1e5)) +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(size = 14),  # X-axis tick labels
+    axis.text.y = element_text(size = 14),   # Y-axis tick labels
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.key.width = unit(1,"cm"),
+    # legend.position = "inside",
+    legend.position = c(0.8,0.85),
+    legend.background = element_rect(fill = "white", color = "black")) +
+  guides(linetype = guide_legend(override.aes = list(linewidth = 4)))
+
+
+
+
+
+
+
+
+# # # # # # # # # # RUN BY COUNTRY???? # # # # # # # # # # # # # #
+
+
+
+
