@@ -35,7 +35,7 @@ gv <- vect(dfg, geom=c("long", "lat"), crs="EPSG:4326")
 # UNIVERSITY DATA
 dfr = read.csv(pth2)
 head(dfr);dim(dfr)
-uv <- vect(dfr[dfr$Rank<=1000, ], geom=c("long", "lat"), crs="EPSG:4326")
+uv <- vect(dfr[dfr$Rank<=1500, ], geom=c("long", "lat"), crs="EPSG:4326")
 dim(uv)
 
 # reprojected global window
@@ -55,7 +55,7 @@ sp2 <- create_window_global()
 par(mfrow=c(3,1))
 plot(sp2, col=adjustcolor('navajowhite', 0.5), main="Population > 10,000")
 plot(project(pop2[,1], sp2), add=T, cex=0.5, pch=18, col='deepskyblue3')
-plot(sp2, col=adjustcolor('navajowhite', 0.5), main="Universities (Top 1000)")
+plot(sp2, col=adjustcolor('navajowhite', 0.5), main="Universities (Top 1500)")
 plot(project(uv[,1], sp2),add=T, cex=0.5, pch=17, col='firebrick')
 plot(sp2, col=adjustcolor('navajowhite', 0.5), main="GBIF Observations")
 plot(project(gv[,1], sp2),add=T, cex=0.7, pch=1)
@@ -181,6 +181,7 @@ for (rank_level in univ_lists){
   # run cross
   # L_obs_cross <- Lcross(cross_all, i = "univ", j = "obs")
   L_obs_cross <- pcfcross.inhom(cross_all, i = "univ", j = "obs")
+  # L_obs_cross <- pcfcross(cross_all, i = "univ", j = "obs", divisor='d')
   
   L_obs_cross = as.data.frame(L_obs_cross)
   L_obs_cross$univ_rank = rank_level
@@ -202,6 +203,7 @@ plot(df_cross)
 df_cross = readRDS("/Users/mattolson/data/drosophila/results/k/dfcross_univ_pcf.rds")
 
 # 1. Compute relative values to theo
+library(ggplot2)
 
 # 2. Pivot to long format
 df_long1 <- df_cross %>%
@@ -224,7 +226,7 @@ df_long1 %>%
   filter(variable=='trans') %>%
   # filter(univ_rank%in%c(10, 100, 1000)) %>%
   filter(univ_rank%in%c(100, 500, 1000)) %>%
-  filter(univ_rank==1000) %>%
+  # filter(univ_rank==1000) %>%
   ggplot( aes(x = r, y = value,
                           color = univ_rank)) +
   geom_line(linewidth=1.2) +
@@ -266,7 +268,7 @@ pop_lists = c(10, 20, 30, 40)  *1e3
 for (pop_level in pop_lists){
   print(paste("...running rank:", pop_level,"or", match(pop_level, pop_lists), "of", length(pop_lists)))
   pop0 <- pop[pop$global_ppp_2022_1km_UNadj_constrained>pop_level,]
-  print(dim(uv0))
+  print(dim(pop0))
   # prep data
   # cross_all = prep_k_data(uv0, gv, sp2)
   cross_all = prep_k_data(pop0, gv, sp2)
@@ -296,7 +298,7 @@ df_cross_pop <- readRDS("/Users/mattolson/data/drosophila/results/k/dfcross_pop_
 
 # 2. Pivot to long format
 df_long1 <- df_cross_pop %>%
-  pivot_longer(cols = !c(r, univ_rank),
+  pivot_longer(cols = !c(r, pop),
                names_to = "variable",
                values_to = "value")
 
@@ -308,22 +310,22 @@ line_types <- c(
 )
 
 df_long1 <- df_long1 %>%
-  mutate(univ_rank = as.factor(univ_rank))
+  mutate(pop = as.factor(pop))
 
 # Plot
 df_long1 %>% 
   filter(variable=='trans') %>%
-  filter(univ_rank%in%c(10000, 20000)) %>%
-  filter(univ_rank==10000) %>%
+  filter(pop%in%c(10000, 20000)) %>%
+  # filter(pop==10000) %>%
   ggplot( aes(x = r, y = value,
-              color = univ_rank)) +
+              color = pop)) +
   geom_line(linewidth=1.2) +
   geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
   geom_vline(xintercept = 0, color = "black", linewidth = 0.5) +
   # Option 1 (automatic greyscale)
   scale_color_grey(start = 0.1, end = 0.7) +
   labs(x = "r (km)",
-       y = expression(hat(g)[obs/univ]),
+       y = expression(hat(g)[obs/pop]),
        color = "Population") +
   # ylim(c(0,1e5)) +
   theme_classic() +
@@ -409,18 +411,20 @@ df1 <- long_df %>%
   select(r, trans, group_label) %>%
   mutate(group_label = factor(group_label)) 
   
-graphics.off()
+# graphics.off()
 
 long_df %>% 
-  filter(group_label %in% c("u500", "pop10000")) %>%
+  filter(!(group_label %in% c('u10', 'u50', 'u100', 'pop40000'))) %>% 
+  # filter(group_label %in% c("u1000", "pop10000")) %>%
   # filter(group_label %in% c("u500", "pop10000")) %>%
-  mutate(group_label = ifelse(group_label=='u500', 'Top 1000 universities', 
-                              ifelse(group_label=='pop10000', 'Pop > 10,000', group_label))) %>% 
+  # mutate(group_label = ifelse(group_label=='1000', 'Top 1000 universities', 
+  #                             ifelse(group_label=='pop10000', 'Pop > 10,000', group_label))) %>% 
   filter(is.finite(trans)) %>% select(r, trans,group_label) %>% 
   ggplot(aes(x = r, y = trans, color = group_label)) +
   geom_line(linewidth = 1) +
   ylim(c(0,100)) +
   xlim(c(0,2000)) +
+  facet_wrap(.~group_label) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
   geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
   labs(title = "Cross pair correlation (Universities & Population vs. GBIF observations)", color = "Group") +
@@ -436,6 +440,66 @@ long_df %>%
 png("figs_0725/pcf_all_p10000_u1000.png", width = 8, height = 6, unit = "in", res = 300)
 
 # add horizontal and vertical lines at 0
+
+
+
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(scales)
+
+# Custom order
+group_order <- c("u10", "u50", "u100", "u500", "u1000", "u1500",
+                 "pop10000", "pop20000", "pop30000", "pop40000")
+
+# Custom label mapping
+label_map <- c(
+  "u10" = "Top 10 (Univ)",
+  "u50" = "Top 50",
+  "u100" = "Top 100 (Univ)",
+  "u500" = "Top 500",
+  "u1000" = "Top 1000",
+  "u1500" = "Top 1500",
+  "pop10000" = "Population 10K",
+  "pop20000" = "Population 20K",
+  "pop30000" = "Population 30K",
+  "pop40000" = "Population 40K"
+)
+
+# Define a 3-shade grayscale palette, repeating
+gray_palette <- rep(c("gray20", "gray50", "gray80"), 2)
+
+# Filter and transform
+long_df %>%
+  filter(!(group_label %in% c("u10", "u50", "u100", "pop40000"))) %>%
+  filter(is.finite(trans)) %>%
+  select(r, trans, group_label) %>%
+  mutate(
+    group_label = factor(group_label, levels = group_order),
+    group_label = fct_relabel(group_label, ~label_map[.x])
+  ) %>%
+  ggplot(aes(x = r, y = trans, color = group_label)) +
+  geom_line(linewidth = 1) +
+  ylim(c(0, 100)) +
+  xlim(c(0, 2000)) +
+  facet_wrap(. ~ group_label) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  labs(
+    # title = "Cross pair correlation (Universities & Population vs. GBIF observations)",
+    color = "Group",
+    y = "g",
+    x = "r"
+  ) +
+  scale_color_manual(values = gray_palette) +
+  theme_classic(base_size = 14) +
+  theme(
+    strip.text = element_text(size = 16, face = "bold"),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 14, angle = 45, hjust = 1),
+    panel.grid = element_blank(),
+    legend.position = 'none'
+  )
 
 
 
@@ -487,7 +551,7 @@ for(ue in ue_names){
 head(df_eco_cross)
 
 # saveRDS(df_eco_cross, "/Users/mattolson/data/drosophila/results/k/df_eco_pcf.rds")
-df_cross = readRDS("/Users/mattolson/data/drosophila/results/k/df_eco_pcf.rds")
+df_eco_cross = readRDS("/Users/mattolson/data/drosophila/results/k/df_eco_pcf.rds")
 
 # PLOTS
 df_long_e <- df_eco_cross %>%
@@ -570,7 +634,7 @@ head(df_eco_pop)
 
 # saveRDS(df_eco_pop, "/Users/mattolson/data/drosophila/results/k/df_eco_pcf_pop10.rds")
 # saveRDS(df_eco_pop, "/Users/mattolson/data/drosophila/results/k/df_eco_pcf_pop20.rds")
-df_eco_pop = readRDS("/Users/mattolson/data/drosophila/results/k/df_eco_pcf_pop20.rds")
+df_eco_pop = readRDS("/Users/mattolson/data/drosophila/results/k/df_eco_pcf_pop10.rds")
 
 # PLOTS
 df_long_ep <- df_eco_pop %>%
