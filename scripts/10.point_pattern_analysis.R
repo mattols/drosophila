@@ -22,7 +22,9 @@ dfgbif <- read.csv(pth_gbif)
 gbif <- vect(dfgbif, geom=c("long", "lat"), crs="EPSG:4326")
 
 # POPULATION DATA
-popath <- 'data/dros_spatial/global_ppp_2022_1km_UNadj_constrained.tif'
+# file exceeds 100 MB github filesize limit
+# download from https://data.worldpop.org/GIS/Population/Global_2021_2022_1km_UNadj/
+popath <- 'path_to_file/global_ppp_2022_1km_UNadj_constrained.tif'
 popul <- rast(popath)
 pop <- as.points(popul)
 # pop density > 10K
