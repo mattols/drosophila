@@ -1,12 +1,12 @@
 
 
-
 # ASSESS UNIVERSITY STRENGTH
 uv0 <- vect(dfr[dfr$Rank<=500,], 
             geom=c("long", "lat"), crs="EPSG:4326")
 
 # prep data
 cross_all = prep_k_data(uv0, gv_all, sp2)
+# cross_all = prep_k_data(uv0, gv, sp2)
 
 # run cross
 pcf_cross <- pcfcross.inhom(cross_all, i = "univ", j = "obs")
@@ -29,8 +29,8 @@ plot(pcf_cross$r, pcf_cross$numerator, type = "h",
      main = "Number of Point Pairs per Distance Bin",
      xlab = "r (km)", ylab = "Number of Pairs")
 
-
 plot(envelope_cross, xlim=c(0,50), main = "Cross-PCF with Simulation Envelopes")
+
 
 
 

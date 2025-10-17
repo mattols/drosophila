@@ -1,6 +1,5 @@
 
 # Threshold - relevance drops off at a certain point
-#
 
 library(spatstat.core)
 
@@ -93,7 +92,6 @@ dim(gv_all_csv)
 gv_all <- vect(gv_all_csv, geom=c("long", "lat"), crs="EPSG:4326")
 
 gv2 = gv_all;gv2$cnt=1
-
 
 zonal(gv2,
       wrld, fun='sum', as.polygons=T) %>% 
