@@ -83,7 +83,16 @@ zonal(vect(dfr2, geom=c("long", "lat"), crs="EPSG:4326"),
   select(name, cnt) %>% 
   head(12)
 
+# smaller GBIF
 gv2 = gv;gv2$cnt=1
+
+# ALL GBIF
+gv_all_csv = read.csv('/Users/mattolson/src/drosophila-bioclim/data/output/all.drosophila.gbif.csv')
+dim(gv_all_csv)
+gv_all <- vect(gv_all_csv, geom=c("long", "lat"), crs="EPSG:4326")
+
+gv2 = gv_all;gv2$cnt=1
+
 
 zonal(gv2,
       wrld, fun='sum', as.polygons=T) %>% 
@@ -98,9 +107,10 @@ wrld$area = terra::expanse(wrld, unit='km')
 
 zonal(gv2, wrld, fun='sum', as.polygons=T) %>% 
   as.data.frame() %>% 
-  mutate(cnt_area=cnt/area) %>% 
+  mutate(cnt_area=cnt/(area/(10*10))) %>% #100sqkm 
   arrange(desc(cnt_area)) %>% 
-  select(name, cnt_area, cnt) %>%
+  select(name, area, cnt_area, cnt) %>%
+  mutate(area = round(area)) %>% 
   head(12)
 
 

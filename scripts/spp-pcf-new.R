@@ -237,7 +237,7 @@ df_long1 %>%
   labs(x = "r (km)",
        y = expression(hat(g)[obs/univ]),
        color = "Rank") +
-  # ylim(c(0,1e5)) +
+  ylim(c(0,1e5)) +
   theme_classic() +
   theme(
     axis.text.x = element_text(size = 14),  # X-axis tick labels
